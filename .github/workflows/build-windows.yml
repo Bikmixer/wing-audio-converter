@@ -64,18 +64,23 @@ jobs:
         pip install -r requirements.txt
         brew install ffmpeg
     
-    - name: Get FFmpeg path
-      id: ffmpeg
+    - name: Prepare FFmpeg
       run: |
         FFMPEG_PATH=$(which ffmpeg)
-        echo "path=$FFMPEG_PATH" >> $GITHUB_OUTPUT
+        # Resolve symlink if needed
+        if [ -L "$FFMPEG_PATH" ]; then
+          FFMPEG_PATH=$(readlink -f "$FFMPEG_PATH" || realpath "$FFMPEG_PATH")
+        fi
+        # Copy to local directory to avoid symlink issues
+        cp "$FFMPEG_PATH" ./ffmpeg
+        chmod +x ./ffmpeg
     
     - name: Build app bundle
       run: |
         pyinstaller --name "Wing Converter Pro" \
           --windowed \
           --add-data "gui_interface.html:." \
-          --add-binary "${{ steps.ffmpeg.outputs.path }}:bin" \
+          --add-binary "./ffmpeg:bin" \
           --bundle-identifier "com.wingconverter.pro" \
           gui_web_crossplatform.py
     
