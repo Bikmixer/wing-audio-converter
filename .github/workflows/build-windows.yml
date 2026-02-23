@@ -66,14 +66,15 @@ jobs:
     
     - name: Prepare FFmpeg
       run: |
+        # Get ffmpeg path and resolve any symlinks (macOS compatible)
         FFMPEG_PATH=$(which ffmpeg)
-        # Resolve symlink if needed
-        if [ -L "$FFMPEG_PATH" ]; then
-          FFMPEG_PATH=$(readlink -f "$FFMPEG_PATH" || realpath "$FFMPEG_PATH")
-        fi
-        # Copy to local directory to avoid symlink issues
+        while [ -L "$FFMPEG_PATH" ]; do
+          FFMPEG_PATH=$(readlink "$FFMPEG_PATH")
+        done
+        # Copy to local directory
         cp "$FFMPEG_PATH" ./ffmpeg
         chmod +x ./ffmpeg
+        ls -lh ./ffmpeg
     
     - name: Build app bundle
       run: |
