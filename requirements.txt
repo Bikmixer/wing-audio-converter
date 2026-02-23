@@ -1,2 +1,1 @@
-# No external requirements needed!
-# This tool uses only Python's built-in wave module.
+pyinstaller>=6.0
