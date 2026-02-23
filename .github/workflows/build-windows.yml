@@ -66,15 +66,20 @@ jobs:
     
     - name: Prepare FFmpeg
       run: |
-        # Get ffmpeg path and resolve any symlinks (macOS compatible)
-        FFMPEG_PATH=$(which ffmpeg)
-        while [ -L "$FFMPEG_PATH" ]; do
-          FFMPEG_PATH=$(readlink "$FFMPEG_PATH")
-        done
-        # Copy to local directory
-        cp "$FFMPEG_PATH" ./ffmpeg
+        # Find the actual ffmpeg binary in Homebrew
+        if [ -f "/opt/homebrew/bin/ffmpeg" ]; then
+          FFMPEG_SRC="/opt/homebrew/bin/ffmpeg"
+        elif [ -f "/usr/local/bin/ffmpeg" ]; then
+          FFMPEG_SRC="/usr/local/bin/ffmpeg"
+        else
+          FFMPEG_SRC=$(which ffmpeg)
+        fi
+        
+        # Copy the binary (follow symlinks automatically with -L)
+        cp -L "$FFMPEG_SRC" ./ffmpeg
         chmod +x ./ffmpeg
         ls -lh ./ffmpeg
+        ./ffmpeg -version | head -1
     
     - name: Build app bundle
       run: |
