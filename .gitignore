@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Audio files
+*.wav
+*.mp3
+*.flac
+*.aiff
+
+# Output directories
+*_separated/
+output/
+processed_tracks/
+
+# Build artifacts
+build/
+dist/
+*.spec
+*.egg-info/
+Wing-Converter-Pro-Standalone.zip
+Wing Converter Pro Standalone/
+
+# OS files
+.DS_Store
+Thumbs.db

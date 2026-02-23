@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wing Audio Converter Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+        
+        .panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+        }
+        
+        .panel-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .drop-zone {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            background: white;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .drop-zone:hover {
+            border-color: #764ba2;
+            background: #f0f4ff;
+        }
+        
+        .drop-zone.dragover {
+            border-color: #28a745;
+            background: #e8f5e9;
+        }
+        
+        .drop-zone-text {
+            font-size: 18px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .drop-zone-sub {
+            font-size: 14px;
+            color: #999;
+        }
+        
+        .file-list {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 250px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        
+        .file-item {
+            padding: 10px;
+            background: #f0f4ff;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .file-name {
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .file-remove {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .file-remove:hover {
+            background: #c82333;
+        }
+        
+        .file-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .setting-group {
+            margin-bottom: 20px;
+        }
+        
+        .setting-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .setting-input, .setting-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .setting-input:focus, .setting-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #0078d4;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .info-box p {
+            font-size: 13px;
+            color: #004085;
+        }
+        
+        .convert-section {
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        
+        .progress-container {
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .status-text {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .btn-convert {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn-convert:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+        }
+        
+        .btn-convert:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎵 Wing Audio Converter Pro</h1>
+            <p>Convert multi-channel Behringer Wing recordings to separate audio files</p>
+        </div>
+        
+        <div class="content">
+            <!-- Left Panel - File Selection -->
+            <div class="panel">
+                <div class="panel-title">📁 Input Files</div>
+                
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-text">Drop audio files here</div>
+                    <div class="drop-zone-sub">or click to browse</div>
+                </div>
+                
+                <div class="file-list" id="fileList"></div>
+                
+                <div class="file-buttons">
+                    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">Add Files</button>
+                    <button class="btn btn-danger" onclick="clearFiles()">Clear All</button>
+                </div>
+                
+                <input type="file" id="fileInput" multiple accept="audio/*">
+            </div>
+            
+            <!-- Right Panel - Settings -->
+            <div class="panel">
+                <div class="panel-title">⚙️ Conversion Settings</div>
+                
+                <div class="setting-group">
+                    <label class="setting-label">Output Folder</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" class="setting-input" id="outputDir" value="" placeholder="~/Desktop" style="flex: 1;">
+                        <button class="btn btn-primary" onclick="chooseFolderNative()" style="flex: 0 0 auto; padding: 12px 20px;">Browse</button>
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <label class="setting-label">Output Format</label>
+                    <select class="setting-select" id="outputFormat">
+                        <option value="wav">WAV (Original Quality)</option>
+                        <option value="mp3">MP3 (Compressed)</option>
+                        <option value="flac">FLAC (Lossless)</option>
+                        <option value="aiff">AIFF (Apple)</option>
+                    </select>
+                </div>
+                
+                <div class="setting-group">
+                    <label class="setting-label">Sample Rate</label>
+                    <select class="setting-select" id="sampleRate">
+                        <option value="original">Keep Original</option>
+                        <option value="44100">44100 Hz (CD Quality)</option>
+                        <option value="48000">48000 Hz (Professional)</option>
+                        <option value="96000">96000 Hz (Hi-Res)</option>
+                    </select>
+                </div>
+                
+                <div class="setting-group">
+                    <label class="setting-label">Bit Depth</label>
+                    <select class="setting-select" id="bitDepth">
+                        <option value="original">Keep Original</option>
+                        <option value="16">16 bit (CD Quality)</option>
+                        <option value="24">24 bit (Professional)</option>
+                        <option value="32">32 bit (High Quality)</option>
+                    </select>
+                </div>
+                
+                <div class="info-box">
+                    <p>💡 <strong>Tip:</strong> Select multiple files for batch conversion. Each file will be separated into individual channels.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Convert Section -->
+        <div class="convert-section">
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%">0%</div>
+                </div>
+                <div class="status-text" id="statusText">Ready to convert</div>
+            </div>
+            
+            <button class="btn-convert" id="convertBtn" onclick="startConversion()">Convert Files</button>
+        </div>
+    </div>
+    
+    <script>
+        let selectedFiles = [];
+        
+        // Drop zone functionality
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+        
+        function handleFiles(files) {
+            for (let file of files) {
+                if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                    selectedFiles.push(file);
+                }
+            }
+            updateFileList();
+        }
+        
+        function updateFileList() {
+            if (selectedFiles.length === 0) {
+                fileList.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">No files selected</div>';
+                return;
+            }
+            
+            fileList.innerHTML = selectedFiles.map((file, index) => `
+                <div class="file-item">
+                    <span class="file-name">📄 ${file.name}</span>
+                    <button class="file-remove" onclick="removeFile(${index})">Remove</button>
+                </div>
+            `).join('');
+        }
+        
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            updateFileList();
+        }
+        
+        function clearFiles() {
+            selectedFiles = [];
+            updateFileList();
+        }
+        
+        async function chooseFolderNative() {
+            try {
+                // Call backend to open native macOS folder picker
+                const response = await fetch('/choose-folder');
+                const result = await response.json();
+                
+                if (result.success && result.path) {
+                    document.getElementById('outputDir').value = result.path;
+                } else if (result.error && !result.error.includes('cancelled')) {
+                    console.error('Error selecting folder:', result.error);
+                    // Fallback to manual input
+                    chooseFolder();
+                }
+            } catch (error) {
+                console.error('Error opening folder picker:', error);
+                // Fallback to manual input
+                chooseFolder();
+            }
+        }
+        
+        function chooseFolder() {
+            // Fallback: Prompt user to type or paste folder path
+            const currentPath = document.getElementById('outputDir').value || '~/Desktop';
+            const newPath = prompt('Enter output folder path:\n\nExamples:\n~/Desktop\n~/Music/Wing Recordings\n/Users/yourusername/Documents', currentPath);
+            if (newPath !== null && newPath.trim() !== '') {
+                document.getElementById('outputDir').value = newPath.trim();
+            }
+        }
+        
+        async function startConversion() {
+            if (selectedFiles.length === 0) {
+                alert('Please add at least one audio file to convert.');
+                return;
+            }
+            
+            let outputDir = document.getElementById('outputDir').value.trim();
+            if (!outputDir) {
+                outputDir = '~/Desktop';
+                document.getElementById('outputDir').value = outputDir;
+            }
+            
+            const convertBtn = document.getElementById('convertBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+            const statusText = document.getElementById('statusText');
+            
+            convertBtn.disabled = true;
+            progressContainer.style.display = 'block';
+            statusText.textContent = 'Uploading and converting files...';
+            progressFill.style.width = '10%';
+            progressFill.textContent = '10%';
+            
+            const formData = new FormData();
+            selectedFiles.forEach((file, index) => {
+                formData.append('files', file);
+                console.log(`Added file ${index + 1}: ${file.name}`);
+            });
+            formData.append('output_dir', outputDir);
+            formData.append('output_format', document.getElementById('outputFormat').value);
+            formData.append('sample_rate', document.getElementById('sampleRate').value);
+            formData.append('bit_depth', document.getElementById('bitDepth').value);
+            
+            console.log('Starting conversion with:', {
+                files: selectedFiles.length,
+                output_dir: outputDir,
+                format: document.getElementById('outputFormat').value
+            });
+            
+            try {
+                progressFill.style.width = '30%';
+                progressFill.textContent = '30%';
+                statusText.textContent = 'Converting files...';
+                
+                const response = await fetch('/convert', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('Response status:', response.status);
+                
+                progressFill.style.width = '80%';
+                progressFill.textContent = '80%';
+                
+                const result = await response.json();
+                console.log('Result:', result);
+                
+                if (result.success) {
+                    progressFill.style.width = '100%';
+                    progressFill.textContent = '100%';
+                    statusText.textContent = 'Conversion complete!';
+                    statusText.style.color = '#28a745';
+                    alert(`✅ Successfully converted ${result.files_processed} file(s)!\n\nOutput directory:\n${result.output_dir}`);
+                } else {
+                    statusText.textContent = 'Conversion failed';
+                    statusText.style.color = '#dc3545';
+                    alert('❌ Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Conversion error:', error);
+                statusText.textContent = 'Conversion failed';
+                statusText.style.color = '#dc3545';
+                alert('❌ Error: ' + error.message);
+            } finally {
+                convertBtn.disabled = false;
+                setTimeout(() => {
+                    progressFill.style.width = '0%';
+                    progressFill.textContent = '0%';
+                    statusText.textContent = 'Ready to convert';
+                    statusText.style.color = '#666';
+                    progressContainer.style.display = 'none';
+                }, 3000);
+            }
+        }
+        
+        // Initialize
+        updateFileList();
+    </script>
+</body>
+</html>
