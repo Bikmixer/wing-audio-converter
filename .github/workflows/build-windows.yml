@@ -63,12 +63,19 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     
+    - name: Verify files
+      run: |
+        ls -la
+        cat gui_web_crossplatform.py | head -20
+    
     - name: Build app bundle
       run: |
         pyinstaller --name "Wing Converter Pro" \
           --windowed \
+          --onedir \
           --add-data "gui_interface.html:." \
           --bundle-identifier "com.wingconverter.pro" \
+          --noconfirm \
           gui_web_crossplatform.py
     
     - name: Create distribution package
