@@ -63,33 +63,24 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     
-    - name: Verify files
+    - name: Build executable
       run: |
-        ls -la
-        head -20 gui_web_crossplatform.py
-    
-    - name: Build app bundle
-      run: |
-        pyinstaller --name "Wing Converter Pro" \
-          --windowed \
-          --onedir \
+        pyinstaller --name "wing-converter-pro" \
           --add-data "gui_interface.html:." \
-          --bundle-identifier "com.wingconverter.pro" \
-          --noconfirm \
           gui_web_crossplatform.py
     
     - name: Create distribution package
       run: |
         mkdir "Wing Converter Pro macOS"
-        cp -R "dist/Wing Converter Pro.app" "Wing Converter Pro macOS/"
-        echo "Note: FFmpeg must be installed separately via: brew install ffmpeg" > "Wing Converter Pro macOS/README.txt"
-        zip -r -q "Wing-Converter-Pro-macOS.zip" "Wing Converter Pro macOS"
+        cp -R "dist/wing-converter-pro" "Wing Converter Pro macOS/"
+        echo "Note: Install FFmpeg via: brew install ffmpeg" > "Wing Converter Pro macOS/README.txt"
+        tar -czf "Wing-Converter-Pro-macOS.tar.gz" "Wing Converter Pro macOS"
     
     - name: Upload macOS build
       uses: actions/upload-artifact@v4
       with:
         name: wing-converter-macos
-        path: Wing-Converter-Pro-macOS.zip
+        path: Wing-Converter-Pro-macOS.tar.gz
   
   build-linux:
     runs-on: ubuntu-latest
