@@ -62,31 +62,12 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        brew install ffmpeg
-    
-    - name: Prepare FFmpeg
-      run: |
-        # Find the actual ffmpeg binary in Homebrew
-        if [ -f "/opt/homebrew/bin/ffmpeg" ]; then
-          FFMPEG_SRC="/opt/homebrew/bin/ffmpeg"
-        elif [ -f "/usr/local/bin/ffmpeg" ]; then
-          FFMPEG_SRC="/usr/local/bin/ffmpeg"
-        else
-          FFMPEG_SRC=$(which ffmpeg)
-        fi
-        
-        # Copy the binary (follow symlinks automatically with -L)
-        cp -L "$FFMPEG_SRC" ./ffmpeg
-        chmod +x ./ffmpeg
-        ls -lh ./ffmpeg
-        ./ffmpeg -version | head -1
     
     - name: Build app bundle
       run: |
         pyinstaller --name "Wing Converter Pro" \
           --windowed \
           --add-data "gui_interface.html:." \
-          --add-binary "./ffmpeg:bin" \
           --bundle-identifier "com.wingconverter.pro" \
           gui_web_crossplatform.py
     
@@ -94,6 +75,7 @@ jobs:
       run: |
         mkdir "Wing Converter Pro macOS"
         cp -R "dist/Wing Converter Pro.app" "Wing Converter Pro macOS/"
+        echo "Note: FFmpeg must be installed separately via: brew install ffmpeg" > "Wing Converter Pro macOS/README.txt"
         zip -r -q "Wing-Converter-Pro-macOS.zip" "Wing Converter Pro macOS"
     
     - name: Upload macOS build
